@@ -23,10 +23,14 @@
 
   if (TRACKS.length === 0) return; // 트랙 데이터가 비어있으면 실행 중단 (안전장치)
 
+  // ---- 요소 참조 -------------------------------------------------------
+  // 주의: 티스토리 에디터는 재수정 시 본문에 넣은 id 속성을 종종 지워버림.
+  // 그래서 자주 사라지는 것들(시간/개수/합계 표시)은 id가 아니라
+  // class + 구조(위치)로 찾는다. class는 사라지지 않으므로 안전함.
   var nowTitle = document.getElementById("cpNowTitle");
   var nowArtist = document.getElementById("cpNowArtist");
-  var timeCur = document.getElementById("cpTimeCur");
-  var timeDur = document.getElementById("cpTimeDur");
+  var timeCur = root.querySelector(".cp-time:not(.end)");
+  var timeDur = root.querySelector(".cp-time.end");
   var progressEl = document.getElementById("cpProgress");
   var progressFill = document.getElementById("cpProgressFill");
   var progressDot = document.getElementById("cpProgressDot");
@@ -37,6 +41,11 @@
   var repeatBtn = document.getElementById("cpRepeat");
   var likeBtn = document.getElementById("cpLike");
   var menuBtn = document.getElementById("cpMenu");
+
+  var headerCountSpans = root.querySelectorAll(".cp-list-header span span");
+  var countA = headerCountSpans[0] || null; // TRACK LIST (n)
+  var countB = headerCountSpans[1] || null; // 총 n곡
+  var footerSummary = root.querySelector(".cp-footer span:first-child");
 
   var current = 0;
   var player = null;
@@ -116,9 +125,6 @@
     });
 
     var totalSec = TRACKS.reduce(function (sum, t) { return sum + parseSec(t.duration); }, 0);
-    var countA = document.getElementById("cpCountA");
-    var countB = document.getElementById("cpCountB");
-    var footerSummary = document.getElementById("cpFooterSummary");
     if (countA) countA.textContent = TRACKS.length;
     if (countB) countB.textContent = TRACKS.length;
     if (footerSummary) {
